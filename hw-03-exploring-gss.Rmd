@@ -236,13 +236,60 @@ Responses that were originally Don't know, No answer and Not applicable are alre
 10. In a new variable, recode `advfront` such that Strongly Agree and Agree are mapped to `"Yes"`, and Disagree and Strongly disagree are mapped to `"No"`.
     The remaining levels can be left as is.
     Don't overwrite the existing `advfront`, instead pick a different, informative name for your new variable.
+    
+```{r}
+
+gss16 <- gss16 %>%
+  mutate(advfront_recode = case_when(
+    advfront == "Strongly agree" ~ "Yes",
+    advfront == "Agree" ~ "Yes",
+    advfront == "Disagree" ~ "No",
+    advfront == "Strongly disagree" ~ "No",
+    TRUE ~ as.character(advfront)  
+  ))
+head(gss16$advfront_recode)
+
+
+    
+```
+}}
 
 11. In a new variable, recode `polviews` such that Extremely liberal, Liberal, and Slightly liberal, are mapped to `"Liberal"`, and Slghtly conservative, Conservative, and Extrmly conservative disagree are mapped to `"Conservative"`.
     The remaining levels can be left as is.
     Make sure that the levels are in a reasonable order.
     Don't overwrite the existing `polviews`, instead pick a different, informative name for your new variable.
+    
+    ```{r}
+    
+    
+    
+  gss16 <- gss16 %>%
+  mutate(polviews_recode = case_when(
+    polviews %in% c("Extremely liberal", "Liberal", "Slightly liberal") ~ "Liberal",
+    polviews %in% c("Slightly conservative", "Conservative", "Extremely conservative") ~ "Conservative",
+    TRUE ~ as.character(polviews) 
+  ))
+    
+    gss16$polviews_recode <- factor(gss16$polviews_recode, 
+                                levels = c("Liberal", "Moderate", "Conservative", "Don't know", "No answer", "Not applicable"))
+
+    head(gss16$polviews_recode)
+    ```
+    
 
 12. Create a visualization that displays the relationship between these two new variables and interpret it.
+
+```{r}
+
+ggplot(gss16, aes(x = polviews_recode, fill = advfront_recode)) +
+  geom_bar(position = "fill") +  # Positioning the bars stacked proportionally
+  labs(title = "Relationship between Political Views and Support for Science Research",
+       x = "Political Views",
+       y = "Proportion",
+       fill = "Support for Science Research")
+```
+
+***Liberals on average tend to support science more than Conservatives do, with moderates falling in the middle.***
 
 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
 
